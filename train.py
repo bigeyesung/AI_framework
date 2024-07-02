@@ -59,8 +59,8 @@ def main(cfg):
 	print(cfg)
 
 
-	#construct model
-	model = SegmentorTrainer(
+	## Construct our model by instantiating the class defined above
+	trainer = SegmentorTrainer(
 		model_type=cfg.model_type,
 		class_mapping=cfg.class_mapping,
 		image_size=cfg.image_size,
@@ -68,8 +68,26 @@ def main(cfg):
 		**cfg.segmentation_trainer,
 	)
 
+	# Construct our loss function and an Optimizer. The call to model.parameters()
+	# in the SGD constructor will contain the learnable parameters (defined 
+	# with torch.nn.Parameter) which are members of the model.
+	# criterion=xxx
+	# optimizer=xxx
+
+	#training loop
 	for ind in range(200):
 		#do sth
+		# Forward pass: Compute predicted y by passing x to the model
+		#y_pred=model(x)
+
+		## Compute and print loss
+		#  loss = criterion(y_pred, y)
+		
+		# Zero gradients, perform a backward pass, and update the weights.
+		# optimizer.zero_grad()
+		# loss.backward()
+		# optimizer.step()
+		
 		pass
  
 if __name__ == "__main__":
