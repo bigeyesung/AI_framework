@@ -99,7 +99,7 @@ plt.switch_backend('Agg')
 import numpy as np
 import timeit
 
-num_repeat = 10
+num_repeat = 100
 
 stmt = "train(model)"
 
