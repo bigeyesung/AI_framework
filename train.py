@@ -11,7 +11,7 @@ from PIL import Image
 from torchvision import transforms as v2
 from src.data.datamodule import projDataModule
 from src.model.SegmentationTrainer import SegmentorTrainer
-from src.logger.img_logger import ImageLogger
+# from src.logger.img_logger import ImageLogger
 from omegaconf import OmegaConf
 
 logging.basicConfig(level=logging.INFO)
@@ -42,12 +42,12 @@ def copy_params(model1, model2):
 
 @hydra.main(version_base=None, config_path="configs", config_name="train_dino")
 def main(cfg):
-	log_dir = os.path.join(cfg.log_dir, cfg.experiment_name, cfg.run_name + '_' + time.strftime("%Y-%m-%d-%H:%M:%S"))
-	cfg.log_dir = log_dir
-	config_dict = OmegaConf.to_container(cfg, resolve=True)
-	print(config_dict, type(config_dict))
-	ckpt_dir = os.path.join(log_dir, "ckpt")
-	os.makedirs(ckpt_dir, exist_ok=True)
+	# log_dir = os.path.join(cfg.log_dir, cfg.experiment_name, cfg.run_name + '_' + time.strftime("%Y-%m-%d-%H:%M:%S"))
+	# cfg.log_dir = log_dir
+	# config_dict = OmegaConf.to_container(cfg, resolve=True)
+	# print(config_dict, type(config_dict))
+	# ckpt_dir = os.path.join(log_dir, "ckpt")
+	# os.makedirs(ckpt_dir, exist_ok=True)
 
 	dm =  projDataModule(
 		image_size=cfg.image_size,
@@ -75,20 +75,29 @@ def main(cfg):
 	# optimizer=xxx
 
 	#training loop
-	for ind in range(200):
-		#do sth
-		# Forward pass: Compute predicted y by passing x to the model
-		#y_pred=model(x)
+	for epoch in range(2):  # loop over the dataset multiple times
 
-		## Compute and print loss
-		#  loss = criterion(y_pred, y)
-		
-		# Zero gradients, perform a backward pass, and update the weights.
-		# optimizer.zero_grad()
-		# loss.backward()
-		# optimizer.step()
-		
-		pass
+		running_loss = 0.0
+		for i, data in enumerate(trainloader, 0):
+			# get the inputs; data is a list of [inputs, labels]
+			inputs, labels = data
+
+			# zero the parameter gradients
+			optimizer.zero_grad()
+
+			# forward + backward + optimize
+			outputs = net(inputs)
+			loss = criterion(outputs, labels)
+			loss.backward()
+			optimizer.step()
+
+			# print statistics
+			running_loss += loss.item()
+			if i % 2000 == 1999:    # print every 2000 mini-batches
+				print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
+				running_loss = 0.0
+
+	print('Finished Training')
  
 if __name__ == "__main__":
     main()
